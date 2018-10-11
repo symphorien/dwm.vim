@@ -121,11 +121,14 @@ endfunction
 
 " Add a new buffer
 function! DWM_New()
+  call DWM_Clean()
   " Move current master pane to the stack
   call DWM_Stack(1)
   " Create a vertical split
   vert topleft new
   call DWM_ResizeMasterPaneWidth()
+
+  call DWM_Unclean()
 endfunction
 
 " Move the current window to the master pane (the previous master window is
