@@ -32,6 +32,55 @@ if v:version < 700
   finish
 endif
 
+" We try to keep the following invariant:
+" Any preview, quicklist, location list open is open above/below the master pane.
+" This function will close any preview, quicklist, location buffer.
+" Call this function when the master window is about to be moved to the right,
+" but bear in mind this may mess up the number of windows etc.
+let s:reopen_quickfix = 0
+function! DWM_Clean()
+  " this id won't change even if we close windows
+  let l:curwin = win_getid()
+
+  " close preview window
+  pclose
+  " close quickfix
+  let l:winn = winnr("$")
+  cclose
+  if winnr("$") < l:winn
+    " we have actually closed it, remember to reopen it
+    let s:reopen_quickfix = 1
+  endif
+
+  " now close all the location lists
+  " when a window is closed, windo aborts
+  " so we loop while at lest a window is closed
+  let l:winn = winnr("$") + 1
+  while winnr("$") < winn
+    let l:winn = winnr("$")
+    windo lclose
+  endwhile
+
+  " restore focus
+  call win_gotoid(l:curwin)
+endfunction
+
+" Reopen the quickfix window after DWM_Clean.
+" The location list which we closed is for a now unfocused window so we don't
+" reopen it; and preview buffers cannot (?) be reopened.
+" Call this when the focus is on the master pane. The quickfix window will be
+" reopened below it.
+function! DWM_Unclean()
+  if s:reopen_quickfix
+    " this id won't change even if we open windows
+    let l:curwin = win_getid()
+    below cwindow
+    let s:reopen_quickfix = 0
+    " restore focus
+    call win_gotoid(l:curwin)
+  endif
+endfunction
+
 " All layout transformations assume the layout contains one master pane on the
 " left and an arbitrary number of stacked panes on the right
 " +--------+--------+
@@ -82,6 +131,8 @@ function! DWM_Focus()
     return
   endif
 
+  call DWM_Clean()
+
   if winnr() == 1
     wincmd w
   endif
@@ -91,6 +142,8 @@ function! DWM_Focus()
   exec l:curwin . "wincmd w"
   wincmd H
   call DWM_ResizeMasterPaneWidth()
+
+  call DWM_Unclean()
 endfunction
 
 " Handler for BufWinEnter autocommand
@@ -169,6 +222,7 @@ function! DWM_ShrinkMaster()
 endfunction
 
 function! DWM_Rotate(clockwise)
+  call DWM_Clean()
   call DWM_Stack(a:clockwise)
   if a:clockwise
     wincmd W
@@ -177,6 +231,7 @@ function! DWM_Rotate(clockwise)
   endif
   wincmd H
   call DWM_ResizeMasterPaneWidth()
+  call DWM_unclean()
 endfunction
 
 nnoremap <silent> <Plug>DWMRotateCounterclockwise :call DWM_Rotate(0)<CR>
