@@ -33,8 +33,9 @@ if v:version < 700
 endif
 
 " We try to keep the following invariant:
-" Any preview, quicklist, location list open is open above/below the master pane.
+" Any preview, quicklist, location list etc. open is open above/below the master pane.
 " This function will close any preview, quicklist, location buffer.
+" Also closes the undotree pane if undotree is installed.
 " Call this function when the master window is about to be moved to the right,
 " but bear in mind this may mess up the number of windows etc.
 let s:reopen_quickfix = 0
@@ -42,6 +43,10 @@ function! DWM_Clean()
   " this id won't change even if we close windows
   let l:curwin = win_getid()
 
+  " close undotree pane
+  if exists(":UndotreeHide")
+    :UndotreeHide
+  endif
   " close preview window
   pclose
   " close quickfix
