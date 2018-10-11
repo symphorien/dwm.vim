@@ -236,7 +236,7 @@ function! DWM_Rotate(clockwise)
   endif
   wincmd H
   call DWM_ResizeMasterPaneWidth()
-  call DWM_unclean()
+  call DWM_Unclean()
 endfunction
 
 nnoremap <silent> <Plug>DWMRotateCounterclockwise :call DWM_Rotate(0)<CR>
