@@ -287,8 +287,21 @@ if g:dwm_map_keys
 endif
 
 if has('autocmd')
-  augroup dwm
-    au!
-    au BufWinEnter * if &l:buflisted || &l:filetype == 'help' | call DWM_AutoEnter() | endif
-  augroup end
+  function! DWM_EnableAutoManagement()
+    augroup dwm
+      au!
+      au BufWinEnter * if &l:buflisted || &l:filetype == 'help' | call DWM_AutoEnter() | endif
+    augroup end
+  endfunction
+
+  function! DWM_DisableAutoManagement()
+    augroup dwm
+      au!
+    augroup end
+  endfunction
+
+  command DWMEnable call DWM_EnableAutoManagement()
+  command DWMDisable call DWM_DisableAutoManagement()
+
+  call DWM_EnableAutoManagement()
 endif

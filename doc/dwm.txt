@@ -49,19 +49,27 @@ Development happens on GitHub.com:
 ==============================================================================
 COMMANDS                                                        *dwm-commands*
 
-:DWM_New                                                            *:DWM_New*
+:call DWM_New()                                                     *:DWM_New*
 
 Creates a new window with an empty buffer in the master pane.
 
 
-:DWM_Close                                                        *:DWM_Close*
+:call DWM_Close()                                                 *:DWM_Close*
 
 Closes the active window if no unsaved changes are pending.
 
 
-:DWM_Focus                                                        *:DWM_Focus*
+:call DWM_Focus()                                                 *:DWM_Focus*
 
 Focus the active window by placing it in the master pane.
+
+:DWMEnable                                                        *:DWMEnable*
+
+Undoes the effect of |:DWMDisable|
+
+:DWMDisable                                                      *:DWMDisable*
+
+Temporarily disables reorganizing windows when a new window is opened
 
 
 ==============================================================================
